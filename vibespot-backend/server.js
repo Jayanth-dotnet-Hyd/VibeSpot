@@ -2,36 +2,31 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
-// Load environment variables
 dotenv.config();
 
-// Create Express application
+import authRoutes from "./routes/authRoutes.js";
+
+// IMPORTANT:
+// dotenv.config() must be called BEFORE importing supabase
+
+import supabase from "./config/supabase.js";
+
+import indexRoutes from "./routes/index.js";
+import healthRoutes from "./routes/health.js";
+
+
 const app = express();
 
-// Server Port
 const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// Home Route
-app.get("/", (req, res) => {
-    res.status(200).json({
-        success: true,
-        message: "Welcome to the VibeSpot Backend 🚀",
-        version: "1.0.0"
-    });
-});
-
-// Health Check Route
-app.get("/health", (req, res) => {
-    res.status(200).json({
-        status: "OK",
-        server: "Running",
-        timestamp: new Date().toISOString()
-    });
-});
+// Routes
+app.use("/", indexRoutes);
+app.use("/health", healthRoutes);
+app.use("/api/auth", authRoutes);
 
 // Start Server
 app.listen(PORT, () => {
