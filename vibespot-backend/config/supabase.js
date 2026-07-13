@@ -29,18 +29,13 @@ import { createClient } from "@supabase/supabase-js";
 
 dotenv.config();
 
+console.log(process.env.PORT);
+console.log(process.env.SUPABASE_URL);
+console.log(!!process.env.SUPABASE_ANON_KEY);
+
 const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_ANON_KEY
 );
-
-const { data, error } = await supabase
-    .from("users")
-    .select("*")
-    .limit(1);
-
-console.log("Supabase Test");
-console.log(data);
-console.log(error);
 
 export default supabase;
