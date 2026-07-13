@@ -67,3 +67,25 @@ export const registerUserService = async ({
         }
     };
 };
+
+export const loginUserService = async ({ email, password }) => {
+
+    if (!email || !password) {
+        throw new Error("Email and password are required.");
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+    });
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return {
+        message: "Login successful.",
+        session: data.session,
+        user: data.user
+    };
+};
