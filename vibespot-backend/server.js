@@ -15,6 +15,7 @@ import supabase from "./config/supabase.js";
 import indexRoutes from "./routes/index.js";
 import healthRoutes from "./routes/health.js";
 import checkinRoutes from "./routes/checkinRoutes.js";
+import vibeRoutes from "./routes/vibeRoutes.js";
 
 
 const app = express();
@@ -37,6 +38,7 @@ app.use("/api/auth", (req, res, next) => {
 });
 app.use("/api/auth", authRoutes);
 app.use("/api/checkins",checkinRoutes);
+app.use("/api/vibes", vibeRoutes);
 
 // Start Server
 app.listen(PORT, () => {
