@@ -1,5 +1,6 @@
 import supabase from "../config/supabase.js";
 import { v4 as uuidv4 } from "uuid";
+import AppError from "../utils/appError.js";
 
 export const sendVibeService = async (sender, body) => {
 
@@ -12,7 +13,7 @@ export const sendVibeService = async (sender, body) => {
 
     // Step 2 - Prevent self-vibe
     if (sender.id === receiverId) {
-        throw new Error("You cannot send a vibe to yourself.");
+        throw new AppError("You cannot send a vibe to yourself.",400);
     }
 
     // Step 3 - Verify receiver exists
@@ -23,11 +24,14 @@ export const sendVibeService = async (sender, body) => {
         .maybeSingle();
 
     if (receiverError) {
-        throw new Error(receiverError.message);
+        throw new AppError(
+            "Receiver not found.",
+            404
+        );
     }
 
     if (!receiver) {
-        throw new Error("Receiver not found.");
+        throw new AppError("Receiver not found.",404);
     }
 
     // Step 4 - Sender active check-in
@@ -39,7 +43,7 @@ export const sendVibeService = async (sender, body) => {
         .maybeSingle();
 
     if (!senderCheckIn) {
-        throw new Error("You are not checked in.");
+        throw new AppError("You are not checked in.",400);
     }
 
     // Step 5 - Receiver active check-in
@@ -51,12 +55,12 @@ export const sendVibeService = async (sender, body) => {
         .maybeSingle();
 
     if (!receiverCheckIn) {
-        throw new Error("Receiver is not checked in.");
+        throw new AppError("Receiver is not checked in.",400);
     }
 
     // Step 6 - Same place validation
     if (senderCheckIn.place_name !== receiverCheckIn.place_name) {
-        throw new Error("You can only send vibes to users at the same place.");
+        throw new AppError("You can only send vibes to users at the same place.",409);
     }
 
     // We will continue from here in the next step.
@@ -69,7 +73,7 @@ export const sendVibeService = async (sender, body) => {
         .maybeSingle();
 
     if (duplicateVibe) {
-        throw new Error("You have already sent a vibe to this user.");
+        throw new AppError("You have already sent a vibe to this user.",409);
     }
 
     // Step 8 - Check reverse vibe

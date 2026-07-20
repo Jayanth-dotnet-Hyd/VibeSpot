@@ -4,6 +4,9 @@ import {
     getMyCheckInService,
     getNearbyUsersService
 } from "../services/checkinService.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import { successResponse } from "../utils/apiResponse.js";
+import { mapCheckIn } from "../mappers/checkinMapper.js";
 
 export const checkIn = async (req, res) => {
 
@@ -49,27 +52,20 @@ export const checkOut = async (req, res) => {
 
 };
 
-export const getMyCheckIn = async (req, res) => {
+export const getMyCheckIn = asyncHandler(async (req, res) => {
 
-    try {
+    const result = await getMyCheckInService(req.user);
 
-        const result = await getMyCheckInService(req.user);
+    return res
+        .status(200)
+        .json(
+            successResponse(
+                result.message,
+                mapCheckIn(result.checkIn)
+            )
+        );
 
-        return res.status(200).json({
-            success: true,
-            ...result
-        });
-
-    } catch (error) {
-
-        return res.status(400).json({
-            success: false,
-            message: error.message
-        });
-
-    }
-
-};
+});
 
 export const getNearbyUsers = async (req, res) => {
 
