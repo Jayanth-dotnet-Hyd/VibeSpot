@@ -24,24 +24,12 @@
 
 // export default supabase;
 
-import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
-
-dotenv.config();
+import { env } from "./env.js";
 
 const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_ANON_KEY
-    
+    env.SUPABASE_URL,
+    env.SUPABASE_ANON_KEY
 );
-
-const { data, error } = await supabase
-    .from("users")
-    .select("*")
-    .limit(1);
-
-console.log("Supabase Test");
-console.log(data);
-console.log(error);
 
 export default supabase;

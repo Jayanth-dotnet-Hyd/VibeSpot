@@ -1,30 +1,29 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 
-dotenv.config();
 import validateEnv from "./utils/validateEnv.js";
-
 import authRoutes from "./routes/authRoutes.js";
-
-
-// IMPORTANT:
-// dotenv.config() must be called BEFORE importing supabase
-
 import supabase from "./config/supabase.js";
-
 import indexRoutes from "./routes/index.js";
 import healthRoutes from "./routes/health.js";
 import checkinRoutes from "./routes/checkinRoutes.js";
 import vibeRoutes from "./routes/vibeRoutes.js";
+import matchRoutes from "./routes/matchRoutes.js";
 import errorMiddleware from "./middleware/errorMiddleware.js";
 import { logger } from "./utils/logger.js";
+import http from "http";
+import { initializeSocket } from "./socket/socket.js";
 validateEnv();
+
 
 const app = express();
 
 const PORT = process.env.PORT || 5000;
-
+const server = http.createServer(app);
+initializeSocket(server);
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -42,14 +41,12 @@ app.use("/api/auth", (req, res, next) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/checkins",checkinRoutes);
 app.use("/api/vibes", vibeRoutes);
+app.use("/api/matches", matchRoutes);
 app.use(errorMiddleware);
 
 // Start Server
-app.listen(PORT, () => {
-    console.log("=================================");
-    console.log("🚀 VibeSpot Backend Started");
-    logger.info(
-        `Server running on port ${PORT}`
-    );
-    console.log("=================================");
+server.listen(PORT, () => {
+
+    logger.info(`Server running on port ${PORT}`);
+
 });
